@@ -20,8 +20,8 @@ import (
 
 	"google.golang.org/protobuf/types/known/anypb"
 
-	{{ range $pkg, $path := enumPackages (externalEnums .) }}
-		{{ $pkg }} "{{ $path }}"
+	{{ range $pkg, $meta := enumPackages (externalEnums .) }}
+		{{ $pkg }} "{{ $meta.Path }}"
 	{{ end }}
 )
 
@@ -40,8 +40,8 @@ var (
 	_ = anypb.Any{}
 	_ = sort.Sort
 
-	{{ range $pkg, $path := enumPackages (externalEnums .) }}
-	_ = {{ $pkg }}.{{ enumName (index (externalEnums $) 0) }}(0)
+	{{ range $pkg, $meta := enumPackages (externalEnums .) }}
+	_ = {{ $meta.Path }}.{{ enumName $meta.Enum }}(0)
 	{{ end }}
 )
 

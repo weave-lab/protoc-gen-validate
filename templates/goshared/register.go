@@ -343,8 +343,14 @@ func (fns goSharedFuncs) enumName(enum pgs.Enum) string {
 	}
 }
 
-func (fns goSharedFuncs) enumPackages(enums []pgs.Enum) map[pgs.Name]pgs.FilePath {
-	out := make(map[pgs.Name]pgs.FilePath, len(enums))
+// EnumPackageMeta contains metadata about an enum package
+type EnumPackageMeta struct {
+	Path pgs.FilePath
+	Enum pgs.Enum
+}
+
+func (fns goSharedFuncs) enumPackages(enums []pgs.Enum) map[pgs.Name]EnumPackageMeta {
+	out := make(map[pgs.Name]EnumPackageMeta, len(enums))
 
 	nameCollision := make(map[pgs.Name]int)
 
@@ -352,14 +358,17 @@ func (fns goSharedFuncs) enumPackages(enums []pgs.Enum) map[pgs.Name]pgs.FilePat
 
 		pkgName := fns.PackageName(en)
 
-		path, ok := out[pkgName]
+		meta, ok := out[pkgName]
 
-		if ok && path != fns.ImportPath(en) {
+		if ok && pgs.FilePath(meta.Path) != fns.ImportPath(en) {
 			nameCollision[pkgName] = nameCollision[pkgName] + 1
 			pkgName = pkgName + pgs.Name(strconv.Itoa(nameCollision[pkgName]))
 		}
 
-		out[pkgName] = fns.ImportPath(en)
+		out[pkgName] = EnumPackageMeta{
+			Path: fns.ImportPath(en),
+			Enum: en,
+		}
 	}
 
 	return out
