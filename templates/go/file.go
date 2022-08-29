@@ -41,7 +41,7 @@ var (
 	_ = sort.Sort
 
 	{{ range $pkg, $meta := enumPackages (externalEnums .) }}
-	_ = {{ $meta.Path }}.{{ enumName $meta.Enum }}(0)
+	_ = {{ $pkg }}.{{ enumName $meta.Enum }}(0)
 	{{ end }}
 )
 
